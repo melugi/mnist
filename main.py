@@ -14,3 +14,5 @@ def mnist_loss(self, predictions, targets) -> Tensor:
 test_set = torchvision.datasets.MNIST('./', train=False, download=True, transform=None)
 train_set = torchvision.datasets.MNIST('./', train=True, download=True, transform=None)
 
+weights = initalize_params(28*28)
+bias = initalize_params(1)
