@@ -3,10 +3,10 @@ from torch.functional import Tensor
 
 class Learner:
 
-    def __init__(self, data, model, optimizer_func, loss_func, metric_func) -> None:
+    def __init__(self, data, model, optimizer, loss_func, metric_func) -> None:
         self.data = data
         self.model = model
-        self.optimizer_func = optimizer_func
+        self.optimizer = optimizer
         self.loss_func = loss_func
         self.metric_func = metric_func
 
@@ -23,11 +23,16 @@ class Learner:
         - Calculate gradient
         - Use the gradient to step down on each parameter
     '''
-    def train(self, learning_rate) -> None:
+    def train(self) -> None:
         for x, y in self.data:
-            prediction = self.model(x)
-            loss = self.loss_func(prediction, y)
-            loss.backward()
+            self.calc_grad(x, y)
+            self.optimizer.step()
+            self.optimizer.zero_grad()
+
+    def calc_grad(self, x, y):
+        prediction = self.model(x)
+        loss = self.loss_func(prediction, y)
+        loss.backward()
 
     def batch_accuracy(self, xb, yb) -> float:
         pass
