@@ -29,7 +29,7 @@ class Learner:
             self.optimizer.step()
             self.optimizer.zero_grad()
 
-    def calc_grad(self, x: Tensor, y: Tensor):
+    def calc_grad(self, x: Tensor, y: Tensor) -> None:
         prediction = self.model(x)
         loss = self.loss_func(prediction, y)
         loss.backward()
