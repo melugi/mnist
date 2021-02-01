@@ -7,12 +7,20 @@ def initalize_params(size, std=1.0) -> Tensor: return (torch.rand(size)*std).req
 
 def mse(predictions, targets) -> Tensor: return ((predictions - targets)**2).mean().sqrt()
 
-def mnist_loss(self, predictions, targets) -> Tensor:
+def mnist_loss(predictions, targets) -> Tensor:
         predictions = torch.sigmoid(predictions)
         return torch.where(targets==1, 1-predictions, predictions).mean()
 
-test_set = torchvision.datasets.MNIST('./', train=False, download=True, transform=None)
-train_set = torchvision.datasets.MNIST('./', train=True, download=True, transform=None)
+test_set = torch.utils.data.Dataloader(
+    torchvision.datasets.MNIST('./', train=False, download=True, 
+                                transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor()])),
+    batch_size=64, shuffle=True)
+
+train_set = torch.utils.data.Dataloader(
+    torchvision.datasets.MNIST('./', train=True, download=True, 
+                                transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor()])),
+    batch_size=500, shuffle=True)
+
 
 weights = initalize_params(28*28)
 bias = initalize_params(1)
