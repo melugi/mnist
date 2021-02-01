@@ -11,6 +11,11 @@ def mnist_loss(predictions, targets) -> Tensor:
         predictions = torch.sigmoid(predictions)
         return torch.where(targets==1, 1-predictions, predictions).mean()
 
+def batch_accuracy(xb, yb) -> float:
+        predictions = xb.sigmoid()
+        correct = (predictions > 0.5) == yb
+        return correct.float().mean()
+
 test_set = torch.utils.data.Dataloader(
     torchvision.datasets.MNIST('./', train=False, download=True, 
                                 transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor()])),
@@ -24,3 +29,5 @@ train_set = torch.utils.data.Dataloader(
 
 weights = initalize_params(28*28)
 bias = initalize_params(1)
+
+

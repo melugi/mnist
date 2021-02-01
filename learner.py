@@ -1,5 +1,4 @@
 import torch
-from optimizer import Optimizer
 from torch.functional import Tensor
 from torch.utils.data.dataloader import DataLoader
 
@@ -8,7 +7,7 @@ class Learner:
     def __init__(self,
                 data: DataLoader,
                 model,
-                optimizer: Optimizer,
+                optimizer,
                 loss_func,
                 metric_func
                 ) -> None:
@@ -34,12 +33,7 @@ class Learner:
         loss = self.loss_func(prediction, y)
         loss.backward()
 
-    def batch_accuracy(self, xb, yb) -> float:
-        predictions = xb.sigmoid()
-        correct = (predictions > 0.5) == yb
-        return correct.float().mean()
-
     def validate(self) -> float:
-        accs = [self.batch_accuracy(xb, yb) for xb, yb in self.data]
+        accs = [self.metric_func(xb, yb) for xb, yb in self.data]
         return round(torch.stack(accs).mean().item(), 4)
 
