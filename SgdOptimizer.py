@@ -1,4 +1,4 @@
-class Optimizer:
+class SgdOptimizer:
     
     def __init__(self, params, lr) -> None:
         self.params, self.lr = list(params), lr
