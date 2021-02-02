@@ -23,8 +23,8 @@ class Learner:
             print(self.validate(), end=' ')
 
     def train(self) -> None:
-        for x, y in self.data:
-            self.calc_grad(x, y)
+        for (x, y) in iter(self.data):
+            self.calc_grad(x.view(-1, 28*28), y)
             self.optimizer.step()
             self.optimizer.zero_grad()
 
@@ -34,6 +34,11 @@ class Learner:
         loss.backward()
 
     def validate(self) -> float:
-        accs = [self.metric_func(xb, yb) for xb, yb in self.data]
+        accs = []
+        for (xb, yb) in iter(self.data):
+            preds = self.model(xb.view(-1, 28*28))
+            print(preds.size(), preds.shape, preds)
+            accs += self.metric_func(preds, yb)
+        
         return round(torch.stack(accs).mean().item(), 4)
 
