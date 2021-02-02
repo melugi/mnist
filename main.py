@@ -1,7 +1,10 @@
 import torch
+from torch import nn
 from torch.functional import Tensor
 from numpy import *
 import torchvision
+from SgdOptimizer import SgdOptimizer
+from Learner import Learner
 
 def initalize_params(size, std=1.0) -> Tensor: return (torch.rand(size)*std).requires_grad_()
 
@@ -12,6 +15,7 @@ def mnist_loss(predictions, targets) -> Tensor:
         return torch.where(targets==1, 1-predictions, predictions).mean()
 
 def batch_accuracy(xb, yb) -> float:
+        print(xb, yb)
         predictions = xb.sigmoid()
         correct = (predictions > 0.5) == yb
         return correct.float().mean()
@@ -26,5 +30,9 @@ train_set = torch.utils.data.DataLoader(
                                 transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor()])),
     batch_size=500, shuffle=True)
 
-weights = initalize_params(28*28)
-bias = initalize_params(1)
+linear_model = nn.Linear(28*28, 1)
+optimizer = SgdOptimizer(linear_model.parameters(), 1)
+
+learner = Learner(train_set, linear_model, optimizer, mnist_loss, batch_accuracy)
+learner.fit(10)
+
