@@ -43,17 +43,14 @@ train_set = torch.utils.data.DataLoader(
                                     ])),
     batch_size=500, shuffle=True)
 
-samples, labels = next(iter(train_set))
-print(samples.shape)
-print(labels.shape)
+model = nn.Sequential(nn.Linear(28*28, 2**7),
+                      nn.ReLU(),
+                      nn.Linear(2**7, 2**6),
+                      nn.ReLU(),
+                      nn.Linear(2**6, 10),
+                      nn.LogSoftmax(dim=1))
 
-utils.peek_into_dataloader(train_set)
+optimizer = optim.SGD(model.parameters(), lr=0.003, momentum=0.9)
 
-'''
-linear_model = nn.Linear(28*28, 1)
-optimizer = SgdOptimizer(linear_model.parameters(), 1)
-
-learner = Learner(train_set, linear_model, optimizer, mnist_loss, batch_accuracy)
+learner = Learner(train_set, val_set, model, optimizer, nn.NLLLoss(), batch_accuracy)
 learner.fit(10)
-
-'''
