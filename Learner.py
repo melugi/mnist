@@ -5,40 +5,57 @@ from torch.utils.data.dataloader import DataLoader
 class Learner:
 
     def __init__(self,
-                data: DataLoader,
+                training_data: DataLoader,
+                val_data: DataLoader,
                 model,
                 optimizer,
                 loss_func,
                 metric_func
                 ) -> None:
-        self.data = data
+        self.training_data = training_data
+        self.val_data = val_data
         self.model = model
         self.optimizer = optimizer
         self.loss_func = loss_func
         self.metric_func = metric_func
 
     def fit(self, epochs: int) -> None:
+        accs = []
         for i in range(epochs):
+            print("===== Epoch {} =====".format(i + 1))
             self.train()
-            print(self.validate(), end=' ')
+            accs.append(self.validate())
+            
+        [print("== Epoch {} Accuracy: {}".format(idx+1, acc)) for idx, acc in enumerate(accs)]
 
     def train(self) -> None:
-        for (x, y) in iter(self.data):
-            self.calc_grad(x.view(-1, 28*28), y)
+        running_loss = 0
+        for (images, labels) in self.training_data:
+            images = images.view(-1, 28*28)
+            running_loss += self.calc_grad(images, labels)
             self.optimizer.step()
             self.optimizer.zero_grad()
+            
+        average_loss = running_loss/len(self.training_data)
+        print("Training loss: {}".format(average_loss))
 
-    def calc_grad(self, x: Tensor, y: Tensor) -> None:
-        prediction = self.model(x)
-        loss = self.loss_func(prediction, y)
+    def calc_grad(self, image: Tensor, label: Tensor) -> float:
+        prediction = self.model(image)
+        loss = self.loss_func(prediction, label)
         loss.backward()
+        return loss.item()
 
     def validate(self) -> float:
-        accs = []
-        for (xb, yb) in iter(self.data):
-            preds = self.model(xb.view(-1, 28*28))
-            print(preds.size(), preds.shape, preds)
-            accs += self.metric_func(preds, yb)
+        acc = 0
+        for (images, labels) in self.val_data:
+            images = images.view(-1, 28*28)
+            with torch.no_grad():
+                preds = self.model(images)
+            
+            torch.exp_(preds)
+            acc = self.metric_func(preds, labels)
         
-        return round(torch.stack(accs).mean().item(), 4)
+        acc = round(acc, 4)*100
+        print("Current Accuracy: {}".format(acc))
+        return acc
 
