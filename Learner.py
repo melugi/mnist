@@ -40,9 +40,9 @@ class Learner:
         average_loss = running_loss/len(self.training_data)
         print("Training loss: {}".format(average_loss))
 
-    def calc_grad(self, image: Tensor, label: Tensor) -> float:
-        prediction = self.model(image)
-        loss = self.loss_func(prediction, label)
+    def calc_grad(self, images: Tensor, labels: Tensor) -> float:
+        predictions = self.model(images)
+        loss = self.loss_func(predictions, labels)
         loss.backward()
         return loss.item()
 
