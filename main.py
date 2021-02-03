@@ -2,7 +2,7 @@ import torch
 import torchvision
 import numpy as np
 import matplotlib.pyplot as plt
-from torch import nn
+from torch import nn, optim
 from torch.functional import Tensor
 
 from SgdOptimizer import SgdOptimizer
@@ -17,10 +17,15 @@ def mnist_loss(predictions, targets) -> Tensor:
         predictions = torch.sigmoid(predictions)
         return torch.where(targets==1, 1-predictions, predictions).mean()
 
-def batch_accuracy(xb, yb) -> float:
-        predictions = xb.sigmoid()
-        correct = (predictions > 0.5) == yb
-        return correct.float().mean()
+def batch_accuracy(batch_images, batch_labels) -> float:
+        correct = 0
+        for idx, image in enumerate(batch_images):
+            prediction = torch.argmax(image).item()
+            label = batch_labels[idx].item()
+            if prediction == label:
+                correct += 1
+        
+        return correct/len(batch_images)
 
 val_set = torch.utils.data.DataLoader(
     torchvision.datasets.MNIST('./', train=False, download=True, 
