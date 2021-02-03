@@ -33,7 +33,7 @@ val_set = torch.utils.data.DataLoader(
                                     torchvision.transforms.ToTensor(),
                                     torchvision.transforms.Normalize((0.5,), (0.5,))
                                     ])),
-    batch_size=64, shuffle=True)
+    batch_size=128, shuffle=True)
 
 train_set = torch.utils.data.DataLoader(
     torchvision.datasets.MNIST('./', train=True, download=True,
@@ -41,7 +41,7 @@ train_set = torch.utils.data.DataLoader(
                                     torchvision.transforms.ToTensor(),
                                     torchvision.transforms.Normalize((0.5,), (0.5,))
                                     ])),
-    batch_size=500, shuffle=True)
+    batch_size=512, shuffle=True)
 
 model = nn.Sequential(nn.Linear(28*28, 2**7),
                       nn.ReLU(),
@@ -50,7 +50,8 @@ model = nn.Sequential(nn.Linear(28*28, 2**7),
                       nn.Linear(2**6, 10),
                       nn.LogSoftmax(dim=1))
 
+#optimizer = SgdOptimizer(model.parameters(), 0.003)
 optimizer = optim.SGD(model.parameters(), lr=0.003, momentum=0.9)
 
 learner = Learner(train_set, val_set, model, optimizer, nn.NLLLoss(), batch_accuracy)
-learner.fit(10)
+learner.fit(50)

@@ -26,8 +26,9 @@ class Learner:
             self.train()
             accs.append(self.validate())
 
-        [print("== Epoch {} Accuracy: {}".format(idx+1, acc)) for idx, acc in enumerate(accs)]
-        print("==== Final Accuracy: {} ====".format(sum(accs)/len(accs)))
+        [print("== Epoch {} Accuracy: {}%".format(idx+1, acc)) for idx, acc in enumerate(accs)]
+        print("==== Last 10 Runs Accuracy: {}% ====".format(sum(accs[-10:])/10))
+        print("==== Total Accuracy: {}% ====".format(sum(accs)/len(accs)))
 
     def train(self) -> None:
         running_loss = 0
@@ -38,7 +39,7 @@ class Learner:
             self.optimizer.zero_grad()
 
         average_loss = running_loss/len(self.training_data)
-        print("Training loss: {}".format(average_loss))
+        print("Training loss: {}".format(round(average_loss, 8)))
 
     def calc_grad(self, images: Tensor, labels: Tensor) -> float:
         predictions = self.model(images)
@@ -57,6 +58,6 @@ class Learner:
             acc = self.metric_func(preds, labels)
 
         acc = round(acc, 4)*100
-        print("Current Accuracy: {}".format(acc))
+        print("Current Accuracy: {}%".format(acc))
         return acc
 
