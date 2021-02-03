@@ -27,6 +27,7 @@ class Learner:
             accs.append(self.validate())
 
         [print("== Epoch {} Accuracy: {}".format(idx+1, acc)) for idx, acc in enumerate(accs)]
+        print("==== Final Accuracy: {} ====".format(sum(accs)/len(accs)))
 
     def train(self) -> None:
         running_loss = 0
