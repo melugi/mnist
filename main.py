@@ -24,11 +24,11 @@ def batch_accuracy(batch_images, batch_labels) -> float:
             label = batch_labels[idx].item()
             if prediction == label:
                 correct += 1
-        
+
         return correct/len(batch_images)
 
 val_set = torch.utils.data.DataLoader(
-    torchvision.datasets.MNIST('./', train=False, download=True, 
+    torchvision.datasets.MNIST('./', train=False, download=True,
                                 transform=torchvision.transforms.Compose([
                                     torchvision.transforms.ToTensor(),
                                     torchvision.transforms.Normalize((0.5,), (0.5,))
@@ -36,7 +36,7 @@ val_set = torch.utils.data.DataLoader(
     batch_size=64, shuffle=True)
 
 train_set = torch.utils.data.DataLoader(
-    torchvision.datasets.MNIST('./', train=True, download=True, 
+    torchvision.datasets.MNIST('./', train=True, download=True,
                                 transform=torchvision.transforms.Compose([
                                     torchvision.transforms.ToTensor(),
                                     torchvision.transforms.Normalize((0.5,), (0.5,))
